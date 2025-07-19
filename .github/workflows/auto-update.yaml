@@ -1,0 +1,25 @@
+name: Auto update manifests
+
+on:
+  push:
+    branches:
+      - auto-update
+
+jobs:
+  update-manifests:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write  # Allow the job to push changes back to the repository
+    steps:
+      - name: Enable Homebrew
+        run: echo "/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin" >> "$GITHUB_PATH"
+      - run: brew install russellbanks/tap/komac
+      - run: komac --version
+      - name: Update manifests
+        run: |
+          komac update 99designs.aws-vault --submit --version 7.2.0 \
+            --urls https://github.com/99designs/aws-vault/releases/download/v7.2.0/aws-vault-windows-386.exe \
+            https://github.com/99designs/aws-vault/releases/download/v7.2.0/aws-vault-windows-arm64.exe
+        env:
+          KOMAC_FORK_OWNER: ${{ github.repository_owner }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
