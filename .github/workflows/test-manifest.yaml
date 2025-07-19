@@ -1,0 +1,22 @@
+name: Test winget manifest
+
+on:
+  push:
+    branches:
+      - 99designs.aws-vault-*
+
+jobs:
+  test:
+    runs-on: windows-2025
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            manifests/9/99designs/aws-vault
+      - name: Validate
+        run: winget validate manifests/9/99designs/aws-vault/7.2.0
+      - name: Install
+        run: |
+          winget settings --enable LocalManifestFiles
+          winget install --manifest manifests/9/99designs/aws-vault/7.2.0
